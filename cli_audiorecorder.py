@@ -14,7 +14,7 @@ def get_parser_arguments():
     parser = argparse.ArgumentParser(
         prog='Audio Recorder',
         description='It will record 10 seconds of an audio stream and save it in a mp3 file',
-        epilog='Linux Rules'
+        epilog='Linux Rules!'
     )
 
     # add arguments for the parser

@@ -4,8 +4,6 @@ import argparse
 import os
 
 
-STREAM_URL = 'https://st01.sslstream.dlf.de/dlf/01/128/mp3/stream.mp3'
-
 def get_parser_arguments():
     """
     It parses the arguments and returns them.

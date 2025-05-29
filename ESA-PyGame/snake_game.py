@@ -7,8 +7,8 @@ import random
 
 game_state = {'score': 0, 
               'running': True, 
-              'snake_pos': [100, 50], 
-              'snake_body': [[100,50], [90, 50], [80, 50]],
+              'snake_pos': [300, 200], 
+              'snake_body': [[300,200]],
               'direction': 'RIGHT',
               'change_drctn': 'RIGHT',
               'prey_pos': [100, 100], 
@@ -101,12 +101,13 @@ def handle_snake():
         game_state['score'] += 10
         game_state['prey_spawn'] = False
     else:
-        game_state['snake_pos'].pop()
+        game_state['snake_body'].pop()
 
     if not game_state['prey_spawn']:
         calc_prey_pos()
-        game_state['prey_spawn'] = True
-
+        
+    game_state['prey_spawn'] = True
+    gfx['screen'].fill(gfx['black'])
 
 """
 calculate new position of prey
@@ -116,8 +117,8 @@ def calc_prey_pos():
 
     global game_state, gfx
 
-    game_state['prey_pos'] = [random.randrange(1, (game_state['grid_end_x']//10)) * 10, 
-                              random.randrange(game_state['grid_start_y'], (game_state['grid_end_y']//10)) * 10]
+    game_state['prey_pos'] = [random.randrange(1, (gfx['grid_end_x']//10)) * 10, 
+                              random.randrange(gfx['grid_start_y'], (gfx['grid_end_y']))] #(gfx['grid_end_y']//10)) * 10
 
 """
 game over function
@@ -128,10 +129,10 @@ def game_over():
     global game_state, gfx
 
     g_o_font = pygame.font.SysFont('comic sans', 40)
-    g_o_surface = g_o_font.render(f'Game Over - You Died! \n Total Score: {game_state['score']}')
-    g_o_rect = g_o_surface.get_rect(midtop= (game_state['game_end_x']//2, game_state['game_end_y']//2))
+    g_o_surface = g_o_font.render(f'Game Over - You Died! \n Total Score: {game_state['score']}', True, white)
+    g_o_rect = g_o_surface.get_rect(midtop= (gfx['grid_end_x']//2, gfx['grid_end_y']//2))
 
-    gxf['screen'].fill(gfx['black'])
+    gfx['screen'].fill(gfx['black'])
     gfx['screen'].blit(g_o_surface, g_o_rect)
     pygame.display.flip()
     time.sleep(3)
@@ -146,16 +147,22 @@ populate screen with drawings
 def render_game():
     global game_state, gfx
 
-    game_state['screen'].fill(gfx['black'])
+    gfx['screen'].fill(gfx['black'])
+
+    # render score
+    show_score()
+    
+    # render horizontal line for separating the playing are from the info area
+    horizontal_line = pygame.draw.line(gfx['screen'], gfx['red'], (gfx['grid_start_x'], gfx['grid_start_y']), (gfx['grid_end_x'], gfx['grid_start_y']))
 
     # render snake
     for position in game_state['snake_body']:
         snake_rect = pygame.Rect(position[0], position[1], 10, 10)
-        pygame.draw.rect(game_state['screen'], game_state['blue'], snake_rect)
+        pygame.draw.rect(gfx['screen'], gfx['blue'], snake_rect)
     
     # render prey
     prey_rect = pygame.Rect(game_state['prey_pos'][0], game_state['prey_pos'][1], 10, 10)
-    pygame.draw.rect(game_state['screen'], game_state['green'], prey_rect)
+    pygame.draw.rect(gfx['screen'], gfx['green'], prey_rect)
 
     pygame.display.flip()
 
@@ -187,7 +194,7 @@ def main():
                     game_state['change_drctn'] = 'RIGHT'
         
         # in case two keys are pressed simultaneously
-        if game_state['change_drctn'] and game_state['direction'] != 'DOWN':
+        if game_state['change_drctn'] == 'UP' and game_state['direction'] != 'DOWN':
             game_state['direction'] = 'UP'
         if game_state['change_drctn'] == 'DOWN' and game_state['direction'] != 'UP':
             game_state['direction'] = 'DOWN'
@@ -197,8 +204,9 @@ def main():
             game_state['direction'] = 'RIGHT'
 
         handle_snake()
-
+        
         render_game()
+
 
         # game over conditions
         # snake is getting out of bounds
@@ -208,13 +216,13 @@ def main():
             game_over()
 
         # snake bites itself
-        for parts in game_state['snake_body']:
+        for parts in game_state['snake_body'][1:]:
             if game_state['snake_pos'][0] == parts[0] and game_state['snake_pos'][1] == parts[1]:
                 game_over()
 
         pygame.display.update()
 
-        gfx['fps_controller'].tick(60)
+        gfx['fps_controller'].tick(10)
 
     pygame.quit()
 

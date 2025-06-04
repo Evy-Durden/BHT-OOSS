@@ -3,18 +3,6 @@ import sys
 import time
 import random
 
-# dictionary for game state
-
-game_state = {'score': 0, 
-              'running': True, 
-              'snake_pos': [300, 200], 
-              'snake_body': [[300,200]],
-              'direction': 'RIGHT',
-              'change_drctn': 'RIGHT',
-              'prey_pos': [100, 100], 
-              'prey_spawn': True}
-
-
 
 # define colors - rgb
 black = pygame.Color(0, 0, 0)
@@ -42,6 +30,10 @@ pygame.init()
 screen = pygame.display.set_mode((window_size_x, window_size_y))
 pygame.display.set_caption('ESA2 Snake Game')
 
+# game icon
+img = pygame.image.load('bht-logo.png')
+pygame.display.set_icon(img)
+
 # FPF frames per second controller
 fps_controller = pygame.time.Clock()
 
@@ -60,6 +52,19 @@ gfx = {'black': black,
        'fps_controller': fps_controller}
 
 
+# dictionary for game state
+
+game_state = {'score': 0,
+              'highscore': 0,
+              'running': True, 
+              'snake_pos': [300, 200], 
+              'snake_body': [[300,200]],
+              'direction': 'RIGHT',
+              'change_drctn': 'RIGHT',
+              'prey_pos': [100, 100], 
+              'prey_spawn': True,
+              'speed': 10}
+
 # functions
 
 """
@@ -74,7 +79,21 @@ def show_score():
     score_surface = score_font.render(f'Score: {game_state['score']}', True, white)
     score_rect = score_surface.get_rect(topleft =(10, 10))
 
+    highscore_font = pygame.font.SysFont('comic sans', 25)
+    # render font object on surface
+    highscore_surface = score_font.render(f'Highscore: {game_state['highscore']}', True, white)
+    highscore_rect = score_surface.get_rect(topleft =(100, 10))
+
     gfx['screen'].blit(score_surface, score_rect)
+    gfx['screen'].blit(highscore_surface, highscore_rect)
+
+    # display current speed
+    speed_font = pygame.font.SysFont('comic sans', 25)
+    #render object on surface
+    speed_surface = speed_font.render(f'Speed: {game_state['speed']}', True, white)
+    speed_rect = speed_surface.get_rect(topleft= (220, 10))
+
+    gfx['screen'].blit(speed_surface, speed_rect)
 
 
 
@@ -100,6 +119,9 @@ def handle_snake():
     if game_state['snake_pos'][0] == game_state['prey_pos'][0] and game_state['snake_pos'][1] == game_state['prey_pos'][1]:
         game_state['score'] += 10
         game_state['prey_spawn'] = False
+        # increase speed of snake
+        game_state['speed'] += 1
+
     else:
         game_state['snake_body'].pop()
 
@@ -118,7 +140,7 @@ def calc_prey_pos():
     global game_state, gfx
 
     game_state['prey_pos'] = [random.randrange(1, (gfx['grid_end_x']//10)) * 10, 
-                              random.randrange(gfx['grid_start_y']//10, (gfx['grid_end_y']//10)) * 10] #(gfx['grid_end_y']//10)) * 10
+                              random.randrange(gfx['grid_start_y']//10, (gfx['grid_end_y']//10)) * 10]
 
 """
 game over function
@@ -132,12 +154,47 @@ def game_over():
     g_o_surface = g_o_font.render(f'Game Over - You Died! \n Total Score: {game_state['score']}', True, white)
     g_o_rect = g_o_surface.get_rect(midtop= (gfx['grid_end_x']//2, gfx['grid_end_y']//2))
 
+    restart_font = pygame.font.SysFont('comic sans', 30)
+    restart_surface = restart_font.render("Press Enter to restart or Esc to quit.", True, gfx['green'])
+    restart_rect = restart_surface.get_rect(midtop= (gfx['grid_end_x']//2, gfx['grid_end_y']//1.5))
+
     gfx['screen'].fill(gfx['black'])
     gfx['screen'].blit(g_o_surface, g_o_rect)
+    gfx['screen'].blit(restart_surface, restart_rect)
+
     pygame.display.flip()
-    time.sleep(3)
-    pygame.quit()
-    sys.exit()
+
+    while True:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+            elif event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_RETURN:
+
+                    # check for new highscore
+                    if game_state['score'] > game_state['highscore']:
+                        game_state['highscore'] = game_state['score']
+
+                    # dictionary for game state
+                    game_state = {'score': 0,
+                                'highscore': game_state['highscore'],
+                                'running': True, 
+                                'snake_pos': [300, 200], 
+                                'snake_body': [[300,200]],
+                                'direction': 'RIGHT',
+                                'change_drctn': 'RIGHT',
+                                'prey_pos': [100, 100], 
+                                'prey_spawn': True,
+                                'speed': 10}
+                    
+                    return
+                
+                elif event.key == pygame.K_ESCAPE:
+                    pygame.quit()
+                    sys.exit()            
+
+   
     
 
 """
@@ -182,6 +239,8 @@ def main():
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
+                pygame.quit()
+                sys.exit()
 
             elif event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_UP:
@@ -222,7 +281,7 @@ def main():
 
         pygame.display.update()
 
-        gfx['fps_controller'].tick(10)
+        gfx['fps_controller'].tick(game_state['speed'])
 
     pygame.quit()
 

@@ -76,12 +76,12 @@ def show_score():
     # create font object
     score_font = pygame.font.SysFont('comic sans', 25)
     # render font object on surface
-    score_surface = score_font.render(f'Score: {game_state['score']}', True, white)
+    score_surface = score_font.render(f"Score: {game_state['score']}", True, white)
     score_rect = score_surface.get_rect(topleft =(10, 10))
 
     highscore_font = pygame.font.SysFont('comic sans', 25)
     # render font object on surface
-    highscore_surface = score_font.render(f'Highscore: {game_state['highscore']}', True, white)
+    highscore_surface = score_font.render(f"Highscore: {game_state['highscore']}", True, white)
     highscore_rect = score_surface.get_rect(topleft =(100, 10))
 
     gfx['screen'].blit(score_surface, score_rect)
@@ -90,7 +90,7 @@ def show_score():
     # display current speed
     speed_font = pygame.font.SysFont('comic sans', 25)
     #render object on surface
-    speed_surface = speed_font.render(f'Speed: {game_state['speed']}', True, white)
+    speed_surface = speed_font.render(f"Speed: {game_state['speed']}", True, white)
     speed_rect = speed_surface.get_rect(topleft= (220, 10))
 
     gfx['screen'].blit(speed_surface, speed_rect)

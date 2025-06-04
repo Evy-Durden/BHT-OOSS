@@ -118,7 +118,7 @@ def calc_prey_pos():
     global game_state, gfx
 
     game_state['prey_pos'] = [random.randrange(1, (gfx['grid_end_x']//10)) * 10, 
-                              random.randrange(gfx['grid_start_y'], (gfx['grid_end_y']))] #(gfx['grid_end_y']//10)) * 10
+                              random.randrange(gfx['grid_start_y']//10, (gfx['grid_end_y']//10)) * 10] #(gfx['grid_end_y']//10)) * 10
 
 """
 game over function

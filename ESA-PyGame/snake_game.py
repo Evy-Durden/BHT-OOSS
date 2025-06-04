@@ -151,7 +151,7 @@ def game_over():
     global game_state, gfx
 
     g_o_font = pygame.font.SysFont('comic sans', 40)
-    g_o_surface = g_o_font.render(f'Game Over - You Died! \n Total Score: {game_state['score']}', True, white)
+    g_o_surface = g_o_font.render(f"Game Over - You Died! \n Total Score: {game_state['score']}", True, white)
     g_o_rect = g_o_surface.get_rect(midtop= (gfx['grid_end_x']//2, gfx['grid_end_y']//2))
 
     restart_font = pygame.font.SysFont('comic sans', 30)

@@ -37,6 +37,15 @@ pygame.display.set_icon(img)
 # FPF frames per second controller
 fps_controller = pygame.time.Clock()
 
+# sounds
+pygame.mixer.init()
+eat_prey_sound = pygame.mixer.Sound('eat_prey.wav')
+losing_sound = pygame.mixer.Sound('lost_game.wav')
+
+# dictionary for sounds
+sounds = {'eat_prey': eat_prey_sound,
+          'losing': losing_sound}
+
 # dictionary for gfx
 
 gfx = {'black': black,
@@ -102,7 +111,7 @@ handling the snake
 
 """
 def handle_snake():
-    global game_state, gfx
+    global game_state, gfx, sounds
 
     # moving the snake
     if game_state['direction'] == 'UP':
@@ -118,6 +127,7 @@ def handle_snake():
     game_state['snake_body'].insert(0, list(game_state['snake_pos']))
     if game_state['snake_pos'][0] == game_state['prey_pos'][0] and game_state['snake_pos'][1] == game_state['prey_pos'][1]:
         game_state['score'] += 10
+        pygame.mixer.Sound.play(sounds['eat_prey'])
         game_state['prey_spawn'] = False
         # increase speed of snake
         game_state['speed'] += 1
@@ -148,7 +158,7 @@ game over function
 """
 def game_over():
 
-    global game_state, gfx
+    global game_state, gfx, sounds
 
     g_o_font = pygame.font.SysFont('comic sans', 40)
     g_o_surface = g_o_font.render(f"Game Over - You Died! \n Total Score: {game_state['score']}", True, white)
@@ -157,6 +167,8 @@ def game_over():
     restart_font = pygame.font.SysFont('comic sans', 30)
     restart_surface = restart_font.render("Press Enter to restart or Esc to quit.", True, gfx['green'])
     restart_rect = restart_surface.get_rect(midtop= (gfx['grid_end_x']//2, gfx['grid_end_y']//1.5))
+
+    pygame.mixer.Sound.play(sounds['losing'])
 
     gfx['screen'].fill(gfx['black'])
     gfx['screen'].blit(g_o_surface, g_o_rect)
